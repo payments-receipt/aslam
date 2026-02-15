@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UPaisa Pro - Official Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f58220; /* UPaisa Orange */
+            --primary-dark: #d36b15;
+            --accent: #1faf38; /* UPaisa Green */
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(-45deg, #fff3e0, #ffe0b2, #f1f8e9, #e8f5e9);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.95);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 15px 10px;
+            text-align: center;
+            color: white;
+        }
+        .card-header h1 { margin: 0; font-size: 18px; font-weight: 700; }
+        .card-header p { margin: 2px 0 0; font-size: 11px; opacity: 0.9; }
+
+        .device-info {
+            background: #fff8f1;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #8a5a2e;
+            border-bottom: 1px solid #fee8d6;
+        }
+
+        .premium-cta {
+            padding: 20px 20px 10px 20px;
+            text-align: center;
+        }
+        .cta-text {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .wa-btn {
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 8px 15px rgba(37, 211, 102, 0.25);
+            transition: 0.3s;
+        }
+        .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 211, 102, 0.35); }
+        .wa-number {
+            display: block;
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #128C7E;
+            letter-spacing: 0.5px;
+        }
+
+        .card-body { padding: 15px 25px 30px 25px; }
+
+        .input-box { margin-bottom: 15px; }
+        .input-box label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
+        .input-box input { 
+            width: 100%; padding: 12px 16px; border: 2px solid #f1f5f9; border-radius: 14px; 
+            font-size: 14px; color: #334155; transition: 0.3s; outline: none; background: #fdfdfd;
+        }
+        .input-box input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(245, 130, 32, 0.1); }
+
+        .key-container {
+            background: #fff4e5;
+            border: 2px dashed #f58220;
+            padding: 15px;
+            border-radius: 18px;
+            margin: 10px 0 25px 0;
+            text-align: center;
+        }
+        .key-container label { color: #c25e00; font-weight: 700; font-size: 12px; display: block; margin-bottom: 8px; }
+        .key-container input { 
+            width: 100%; text-align: center; border: 2px solid #ffcc80; padding: 10px; 
+            border-radius: 10px; font-weight: 800; color: #e65100; text-transform: uppercase; outline: none; 
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; border: none; width: 100%; padding: 16px; border-radius: 16px;
+            font-size: 17px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(245, 130, 32, 0.3);
+            transition: 0.3s;
+        }
+        .btn-generate:active { transform: scale(0.97); }
+
+        .version-tag { text-align: center; font-size: 10px; color: #94a3b8; margin-top: 20px; }
+    </style>
+</head>
+<body onload="getDeviceID()">
+
+    <div class="main-card">
+        <div class="card-header">
+            <h1>UPaisa Receipt Pro</h1>
+            <p>Official HD Screenshot Generator</p>
+        </div>
+
+        <div class="device-info">
+            Your Secure Device ID: <b id="my-device-id" style="color:var(--primary);">...</b>
+        </div>
+
+        <div class="premium-cta">
+            <span class="cta-text">Get Premium Key for Watermark-free Receipts</span>
+            <a href="https://wa.me/923009149660" class="wa-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.031 6.172c-2.32 0-4.591 1.042-4.75 3.938-.033.605.459 1.046 1.066 1.013.51-.03.89-.467.926-.935.114-1.517 1.296-2.119 2.758-2.119 1.55 0 2.846.883 2.846 2.164 0 1.102-.579 1.513-2.17 2.302-1.895.942-2.617 2.011-2.458 3.345.043.366.36.63.73.63h.295c.433 0 .73-.34.706-.773-.125-.858.408-1.15 1.481-1.685 1.969-.984 3.016-2.125 3.016-4.042 0-2.545-2.203-3.938-4.496-3.938zm.091 13.913c.72 0 1.307-.587 1.307-1.307s-.587-1.308-1.307-1.308-1.307.588-1.307 1.308.587 1.307 1.307 1.307zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                </svg>
+                WhatsApp Admin
+            </a>
+            <span class="wa-number">03009149660</span>
+        </div>
+
+        <div class="card-body">
+            <div class="input-box">
+                <label>Receiver Full Name</label>
+                <input type="text" id="in-name" placeholder="MUHAMMAD ASLAM">
+            </div>
+
+            <div class="input-box">
+                <label>Receiver Mobile No.</label>
+                <input type="text" id="in-num" placeholder="03004733766">
+            </div>
+
+            <div class="input-box">
+                <label>Amount (PKR)</label>
+                <input type="number" id="in-amt" value="1.00">
+            </div>
+
+            <div class="key-container">
+                <label>Unlock Premium Mode</label>
+                <input type="text" id="sub-key" placeholder="ENTER LICENSE KEY">
+            </div>
+
+            <button class="btn-generate" onclick="goToReceipt()">
+                Generate UPaisa Receipt 🚀
+            </button>
+
+            <p class="version-tag">2026 Secured System • UPaisa V4.0 Pro</p>
+        </div>
+    </div>
+
+    <script>
+        function getDeviceID() {
+            let specs = navigator.userAgent + screen.width + screen.height + navigator.language;
+            let hash = 0;
+            for (let i = 0; i < specs.length; i++) {
+                hash = ((hash << 5) - hash) + specs.charCodeAt(i);
+                hash |= 0;
+            }
+            let finalID = Math.abs(hash % 10000);
+            if(finalID < 1000) finalID += 1000;
+            document.getElementById('my-device-id').innerText = finalID;
+        }
+
+        function goToReceipt() {
+            const devID = document.getElementById('my-device-id').innerText;
+            
+            sessionStorage.setItem('recName', document.getElementById('in-name').value || "MUHAMMAD ASLAM");
+            sessionStorage.setItem('recNum', document.getElementById('in-num').value || "03004733766");
+            sessionStorage.setItem('amount', document.getElementById('in-amt').value || "1.00");
+            sessionStorage.setItem('key', document.getElementById('sub-key').value);
+            sessionStorage.setItem('currentDeviceID', devID);
+            
+            // Iska naam wahi rakhein jo aapne UPaisa Receipt file ka rakha hai
+            window.location.href = "receipt.html"; 
+        }
+    </script>
+</body>
+</html>

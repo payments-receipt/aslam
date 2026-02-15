@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JazzCash Official Pro Receipt</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --ep-green: #1ab76a; --text-grey: #757575; --text-dark: #1a1a1a; --frame-bg: #4a4a58; --jc-red: #d92323; }
+        
+        html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; background-color: #f2f2f2; font-family: 'Roboto', sans-serif; }
+        body { display: flex; flex-direction: column; align-items: center; padding: 20px 0 50px 0; }
+
+        /* Buttons Styling */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-download { background: var(--ep-green); color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-back { background: white; color: var(--jc-red); border: 2px solid var(--jc-red); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; text-decoration: none; transition: 0.3s; }
+        .btn-back:hover { background: #fff5f5; }
+        
+        /* Receipt Frame */
+        .receipt-container { width: 100%; display: flex; justify-content: center; align-items: center; }
+        #frame-wrapper { background-color: var(--frame-bg); width: 440px; padding: 15px 0; display: flex; flex-direction: column; align-items: center; border-radius: 30px 30px 0 0; flex-shrink: 0; position: relative; }
+        @media (max-width: 460px) { #frame-wrapper { transform: scale(0.82); transform-origin: top center; margin-bottom: -80px; } }
+
+        #receipt-capture { width: 385px; background: white; position: relative; padding: 40px 0 0 0; box-shadow: 0 5px 25px rgba(0,0,0,0.4); overflow: visible; }
+        
+        /* Watermark Styling */
+        .text-watermark-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 151; opacity: 0.35;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='50%25' y='50%25' fill='%23000' font-family='Arial' font-size='7' font-weight='900' text-anchor='middle' transform='rotate(-35 25 25)'%3EDemo Pro%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+        .image-watermark-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 150; opacity: 0.3;
+            background-image: url("st.png");
+            background-repeat: repeat;
+            background-size: 60px 60px;
+        }
+        #demo-watermark { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg); 
+            width: 280px; height: 280px; border: 8px double rgba(220, 38, 38, 0.18); 
+            border-radius: 50%; display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; z-index: 200; pointer-events: none; 
+            color: rgba(220, 38, 38, 0.2); text-align: center; 
+        }
+        #demo-watermark .inner-text { font-size: 38px; font-weight: 900; text-transform: uppercase; border-top: 3px solid rgba(220, 38, 38, 0.15); border-bottom: 3px solid rgba(220, 38, 38, 0.15); padding: 8px 0; letter-spacing: 3px; }
+
+        /* Receipt Elements */
+        .perforation { position: absolute; left: 0; width: 100%; height: 14px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='14'%3E%3Ccircle cx='8' cy='7' r='5.5' fill='%234a4a58'/%3E%3C/svg%3E"); background-repeat: repeat-x; z-index: 100; }
+        .perf-top { top: -7px; } .perf-bottom { bottom: -7px; }
+        .side-notch { position: absolute; width: 18px; height: 18px; background-color: var(--frame-bg); border-radius: 50%; bottom: 65px; z-index: 20; }
+        .notch-left { left: -9px; } .notch-right { right: -9px; }
+
+        .header { text-align: center; padding-top: 0; position: relative; }
+        .status-title { color: #1a1a1a; font-size: 25.5px; font-weight: 700; margin: 0; letter-spacing: -0.3px; line-height: 1.2; }
+        .tid-box { font-size: 15px; color: var(--text-dark); margin-top: 15px; font-weight: 500; }
+        .date-box { font-size: 14px; color: var(--text-grey); margin-top: 4px; }
+        .divider { border: 0; border-top: 1.5px solid #dcdcdc; margin: 15px 35px; width: calc(100% - 70px); display: block; }
+
+        .amount-big { font-size: 44px; font-weight: 900; color: #222; text-align: center; margin: 12px 0; }
+        .amount-big span { font-size: 28px; font-weight: 700; margin-right: 5px; }
+        .trans-type { font-size: 17px; font-weight: 700; color: var(--text-grey); text-align: center; margin-bottom: 18px; }
+
+        .info-table { width: 100%; padding: 0 35px; margin-bottom: 18px; }
+        .info-row { display: flex; justify-content: space-between; padding: 14px 0; align-items: flex-start; }
+        .label { font-size: 16px; color: var(--text-grey); width: 60px; flex-shrink: 0; text-align: left; }
+        .val-col { text-align: right; color: var(--text-dark); flex: 1; padding-right: 14%; overflow-wrap: break-word; }
+        .main-val { font-size: 18px; font-weight: 500; display: block; line-height: 1.3; color: #666; }
+        .sub-val { font-size: 16px; color: var(--text-grey); display: block; margin-top: 2px; font-weight: 400; }
+
+        .footer-bar { background: #f1f1f1; padding: 15px 0; text-align: center; display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 25px; }
+        .secure-text { font-size: 14px; color: #888; }
+        .footer-logo-img { height: 45px; max-width: 150px; width: auto; display: block; }
+
+        /* Expiry Modal */
+        #expiry-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 99999; justify-content: center; align-items: center;
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        }
+        .modal-card {
+            background: white; padding: 25px; border-radius: 20px; text-align: center;
+            width: 280px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            animation: zoomIn 0.3s ease-out;
+        }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-card h2 { color: #dc2626; font-size: 22px; margin: 0 0 10px 0; font-weight: bold; }
+        .modal-card p { color: #444; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+        .modal-btn {
+            background: linear-gradient(135deg, var(--jc-red) 0%, #8b0000 100%);
+            color: white; border: none; padding: 12px 20px;
+            border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px;
+        }
+    </style>
+</head>
+<body onload="renderReceipt()">
+
+    <div class="btn-group">
+        <a href="index.html" class="btn-back">← Edit Details</a>
+        <button class="btn-download" onclick="downloadImage()">Download HD Screenshot</button>
+    </div>
+
+    <div class="receipt-container">
+        <div id="frame-wrapper">
+            <div id="receipt-capture">
+                <!-- Watermarks -->
+                <div id="text-watermark-layer" class="text-watermark-overlay"></div>
+                <div id="image-watermark-layer" class="image-watermark-overlay"></div>
+                <div id="demo-watermark">
+                    <span style="font-size: 14px; margin-bottom: 5px; font-weight: 900;">OFFICIAL DEMO</span>
+                    <div class="inner-text">DO NOT USE</div>
+                </div>
+
+                <div class="perforation perf-top"></div><div class="perforation perf-bottom"></div>
+                <div class="side-notch notch-left"></div><div class="side-notch notch-right"></div>
+                
+                <div class="header">
+                    <h2 class="status-title">Transaction Successful</h2>
+                    <div class="tid-box">TID: <span id="d-tid">00021696469</span></div>
+                    <div class="date-box">On <span id="d-date">...</span></div>
+                </div>
+
+                <hr class="divider">
+                <div class="amount-big"><span>Rs.</span><span id="d-total">100.00</span></div>
+                <div class="trans-type">Transferred to Other Wallet</div>
+                <hr class="divider">
+
+                <div class="info-table">
+                    <div class="info-row"><span class="label">Fee</span><div class="val-col"><span class="main-val" style="font-size: 16.15px;">Rs. 0.00</span></div></div>
+                </div>
+                <hr class="divider">
+                <div class="info-table">
+                    <div class="info-row">
+                        <span class="label">To</span>
+                        <div class="val-col">
+                            <span class="main-val" id="d-to-name">Muhammad Aslam</span>
+                            <span class="main-val" id="d-to-num">*******9660</span>
+                            <span class="sub-val">Others</span>
+                        </div>
+                    </div>
+                </div>
+                <hr class="divider">
+                <div class="info-table">
+                    <div class="info-row">
+                        <span class="label">From</span>
+                        <div class="val-col">
+                            <span class="main-val" id="d-from-name">MUHAMMAD AKRAM</span>
+                            <span class="main-val" id="d-from-num">03004733766</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bar">
+                    <span class="secure-text">Securely paid via</span>
+                    <img src="vogo.png" alt="Logo" class="footer-logo-img" onerror="this.style.display='none'">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP HTML -->
+    <div id="expiry-modal">
+        <div class="modal-card">
+            <div style="font-size: 45px; margin-bottom: 10px;">🚫</div>
+            <h2>Key Expired!</h2>
+            <p>Premium access khatam ho chuka hai. Nayi key ke liye admin se rabta karein.</p>
+            <button class="modal-btn" onclick="window.location.href='index.html'">Get New Key</button>
+        </div>
+    </div>
+
+    <script>
+        const SECRET_SALT = "EP_SECURE_2026_V4"; 
+
+        function renderReceipt() {
+            // Data loading from Session Storage
+            const data = {
+                name: sessionStorage.getItem('recName') || "Muhammad Aslam",
+                num: sessionStorage.getItem('recNum') || "03009149660",
+                sName: sessionStorage.getItem('sendName') || "MUHAMMAD AKRAM",
+                sNum: sessionStorage.getItem('sendNum') || "03004733766",
+                amt: parseFloat(sessionStorage.getItem('amount') || 100.00).toFixed(2),
+                key: sessionStorage.getItem('key') || "",
+                currentDevice: sessionStorage.getItem('currentDeviceID')
+            };
+
+            document.getElementById('d-to-name').innerText = data.name;
+            document.getElementById('d-from-name').innerText = data.sName;
+            document.getElementById('d-from-num').innerText = data.sNum;
+            document.getElementById('d-total').innerText = data.amt;
+            
+            // Format phone number
+            if(data.num.length >= 10) {
+                document.getElementById('d-to-num').innerText = "*******" + data.num.slice(-4);
+            }
+
+            // Key Validation Logic Fixed
+            if (data.key.startsWith("ADS-PRO-")) {
+                let parts = data.key.split("-");
+                if (parts.length === 5) {
+                    let devID = parts[2];
+                    let expiryTime = parseInt(parts[3]);
+                    let userSignature = parts[4];
+                    
+                    let magicNumber = (expiryTime * 3).toString();
+                    let rawDataForSig = magicNumber + devID + SECRET_SALT + expiryTime;
+                    let expectedSignature = btoa(rawDataForSig).split('').reverse().join('').substring(4, 14).toUpperCase();
+
+                    if (userSignature === expectedSignature && devID === data.currentDevice) {
+                        let currentTime = Math.floor(Date.now() / 1000);
+                        if (currentTime < expiryTime) {
+                            // Valid Key: Remove Watermarks
+                            document.getElementById('demo-watermark').style.display = "none";
+                            document.getElementById('text-watermark-layer').style.display = "none";
+                            document.getElementById('image-watermark-layer').style.display = "none";
+                        } else {
+                            // Expired Key: Show Popup
+                            document.getElementById('expiry-modal').style.display = 'flex';
+                        }
+                    }
+                }
+            }
+
+            updatePKTime(); 
+            generateDynamicTID();
+        }
+
+        function generateDynamicTID() {
+            const startID = 7003945655636; 
+            const dailyIncrease = 1020000; 
+            const refTime = new Date('2026-01-14T00:00:00').getTime(); 
+            
+            const now = Date.now();
+            const elapsedMs = now - refTime;
+            
+            const timeDiff = elapsedMs > 0 ? elapsedMs : 0;
+            const elapsedDays = timeDiff / (1000 * 60 * 60 * 24);
+            
+            let currentTID = startID + Math.floor(elapsedDays * dailyIncrease);
+            let finalTID = currentTID.toString().padStart(12, '0');
+            
+            document.getElementById('d-tid').innerText = finalTID;
+        }
+
+        function updatePKTime() {
+            const now = new Date();
+            const options = { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Karachi' };
+            const parts = new Intl.DateTimeFormat('en-GB', options).formatToParts(now);
+            
+            const month = parts.find(p => p.type === 'month').value;
+            const day = parts.find(p => p.type === 'day').value;
+            const year = parts.find(p => p.type === 'year').value;
+            const hour = parts.find(p => p.type === 'hour').value;
+            const minute = parts.find(p => p.type === 'minute').value;
+
+            document.getElementById('d-date').innerText = `${month} ${day}, ${year} at ${hour}:${minute}`;
+        }
+
+        function downloadImage() {
+            const target = document.querySelector("#frame-wrapper");
+            html2canvas(target, { 
+                scale: 3, 
+                useCORS: true, 
+                backgroundColor: "#4a4a58", 
+                onclone: (clonedDoc) => { 
+                    clonedDoc.getElementById('frame-wrapper').style.transform = 'none'; 
+                } 
+            }).then(canvas => {
+                const link = document.createElement('a'); 
+                link.download = 'JazzCash_PRO_Receipt.png'; 
+                link.href = canvas.toDataURL("image/png"); 
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>

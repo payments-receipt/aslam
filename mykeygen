@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADS PRO - Key Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #00f2fe; --secondary: #4facfe; --accent: #f093fb; --bg: #0b0e14; --card-bg: #161b22; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); font-family: 'Poppins', sans-serif; color: #fff; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .clock-container { background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(0, 242, 254, 0.4); padding: 12px 30px; border-radius: 50px; margin-bottom: 25px; text-align: center; }
+        #pk-time { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--primary); letter-spacing: 2px; }
+        .main-card { background: var(--card-bg); width: 100%; max-width: 400px; border-radius: 35px; padding: 35px 25px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        h1 { font-size: 1.8rem; text-align: center; margin: 0 0 30px 0; background: linear-gradient(to right, #00f2fe, #f093fb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+        .input-group { margin-bottom: 25px; }
+        label { display: block; font-size: 0.9rem; color: #8b949e; margin-bottom: 10px; padding-left: 5px; }
+        input { width: 100%; background: #0d1117; border: 2px solid #30363d; border-radius: 18px; padding: 18px; color: #fff; font-size: 1.1rem; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+        .btn-dur { background: #21262d; border: 1px solid #30363d; color: #fff; padding: 14px 5px; border-radius: 15px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+        .btn-dur.active { background: linear-gradient(135deg, var(--secondary), var(--accent)); border: none; }
+        #result-box { display: none; background: rgba(0,0,0,0.4); padding: 25px; border-radius: 25px; border: 1px dashed #30363d; margin-top: 15px; }
+        .key-display { word-break: break-all; font-family: monospace; font-size: 0.95rem; color: #2ecc71; background: #000; padding: 15px; border-radius: 12px; display: block; text-align: center; margin-bottom: 20px; }
+        .copy-btn { width: 100%; background: #fff; color: #000; border: none; padding: 18px; border-radius: 20px; font-weight: 700; cursor: pointer; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(10px); }
+        .success-ui { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; width: 300px; padding: 30px; border-radius: 40px; text-align: center; z-index: 1001; }
+    </style>
+</head>
+<body>
+    <div class="clock-container"><div id="pk-time">00:00:00 AM</div></div>
+    <div class="main-card">
+        <h1>PRO KEY GEN</h1>
+        <div class="input-group"><label>Paste Device ID</label><input type="text" id="devID" placeholder="Ex: 4523"></div>
+        <div class="btn-grid">
+            <button class="btn-dur" onclick="generate(60, this)">1 MIN</button>
+            <button class="btn-dur" onclick="generate(604800, this)">1 WEEK</button>
+            <button class="btn-dur" onclick="generate(2592000, this)">1 MONTH</button>
+        </div>
+        <div id="result-box">
+            <label>Premium Key:</label>
+            <div class="key-display" id="keyOutput">...</div>
+            <button class="copy-btn" onclick="copyKey()">Copy Key</button>
+        </div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="success-ui" id="successBox"><h2>✓ Copied!</h2><p>Key successfully copied.</p><button onclick="closeModal()" style="background:#000; color:#fff; border:none; padding:10px 25px; border-radius:12px; margin-top:15px;">OK</button></div>
+
+    <script>
+        const SALT = "EP_SECURE_2026_V4"; 
+        function updateTime() {
+            const options = { timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            document.getElementById('pk-time').innerText = "PAKISTAN: " + new Intl.DateTimeFormat('en-US', options).format(new Date());
+        }
+        setInterval(updateTime, 1000); updateTime();
+
+        function generate(seconds, btn) {
+            const devID = document.getElementById('devID').value.trim();
+            if (!devID) return alert("Enter Device ID");
+            document.querySelectorAll('.btn-dur').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const expiry = Math.floor(Date.now() / 1000) + seconds;
+
+            // --- FIXED LOGIC TO MATCH RECEIPT ---
+            let magicNumber = (expiry * 3).toString();
+            let rawData = magicNumber + devID + SALT + expiry;
+            
+            // Signature: BTOA -> Reverse -> Substring (4, 14) -> UpperCase
+            let sig = btoa(rawData).split('').reverse().join('').substring(4, 14).toUpperCase();
+
+            document.getElementById('result-box').style.display = 'block';
+            document.getElementById('keyOutput').innerText = `ADS-PRO-${devID}-${expiry}-${sig}`;
+        }
+
+        function copyKey() {
+            const text = document.getElementById('keyOutput').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById('overlay').style.display = 'block';
+                document.getElementById('successBox').style.display = 'block';
+            });
+        }
+        function closeModal() { document.getElementById('overlay').style.display = 'none'; document.getElementById('successBox').style.display = 'none'; }
+    </script>
+</body>
+</html>

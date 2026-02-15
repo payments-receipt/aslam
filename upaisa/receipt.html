@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UPaisa Transaction Receipt</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        body {
+            background-color: #f2f2f2;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            margin: 0;
+        }
+
+        /* Logic Buttons */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-download { background: #1faf38; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-back { background: white; color: #f58220; border: 2px solid #f58220; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; text-decoration: none; transition: 0.3s; }
+
+        .receipt-container {
+            background-color: #ffffff;
+            width: 440px; 
+            height: auto; 
+            padding: 25px 20px 130px 20px; 
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Watermark Logic CSS */
+        .text-watermark-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 150; opacity: 0.35;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='50%25' y='50%25' fill='%23000' font-family='Arial' font-size='7' font-weight='900' text-anchor='middle' transform='rotate(-35 25 25)'%3EDemo Pro%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+        .image-watermark-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 151; opacity: 0.3;
+            background-image: url("st.png");
+            background-repeat: repeat;
+            background-size: 60px 60px;
+        }
+        #demo-watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
+            width: 280px; height: 280px; border: 8px double rgba(220, 38, 38, 0.18);
+            border-radius: 50%; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 200; pointer-events: none;
+            color: rgba(220, 38, 38, 0.2); text-align: center;
+        }
+        #demo-watermark .inner-text { font-size: 38px; font-weight: 900; text-transform: uppercase; border-top: 3px solid rgba(220, 38, 38, 0.15); border-bottom: 3px solid rgba(220, 38, 38, 0.15); padding: 8px 0; letter-spacing: 3px; }
+
+        .logo-box { width: 100%; text-align: center; margin-bottom: 15px; }
+        .logo-img { height: 80px; width: auto; }
+        .status-success { color: #1faf38; font-size: 34px; text-align: center; margin-bottom: 8px; font-weight: 400; width: 100%; white-space: nowrap; display: block; }
+        .divider { border-top: 1.5px solid #3d3d3d; margin: 0px 0; width: 100%; }
+        .receipt-header { text-align: center; font-size: 26px; font-weight: 700; color: #000; margin: 15px 0 25px 0; width: 100%; }
+        .data-content { width: 100%; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 17px; font-weight: 400; color: #808080; line-height: 1.2; gap: 40px; }
+        .label { text-align: left; white-space: nowrap; flex-shrink: 0; }
+        .value { text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
+        .orange-txt { color: #f58220; }
+        .orange-txt .value { font-size: 18px; font-weight: 500; }
+        .uppercase { text-transform: uppercase; }
+        .bottom-line { border-top: 1.5px solid #3d3d3d; margin: 10px 0; width: 100%; }
+        .total-section { display: flex; justify-content: space-between; width: 100%; font-size: 22px; font-weight: 800; color: #000; white-space: nowrap; }
+
+        /* Expiry Modal Logic CSS */
+        #expiry-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 99999; justify-content: center; align-items: center;
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        }
+        .modal-card {
+            background: white; padding: 25px; border-radius: 20px; text-align: center;
+            width: 280px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            animation: zoomIn 0.3s ease-out;
+        }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-card h2 { color: #dc2626; font-size: 22px; margin: 0 0 10px 0; font-weight: bold; }
+        .modal-card p { color: #444; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+        .modal-btn { background: #1faf38; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; }
+
+        @media (max-width: 460px) { .receipt-container { zoom: 0.8; } }
+    </style>
+</head>
+<body onload="renderUPaisaReceipt()">
+
+<div class="btn-group">
+    <a href="index.html" class="btn-back">← Edit Details</a>
+    <button class="btn-download" onclick="downloadUPaisaImage()">Download HD Receipt</button>
+</div>
+
+<div class="receipt-container" id="capture-area">
+    <div id="text-watermark-layer" class="text-watermark-overlay"></div>
+    <div id="image-watermark-layer" class="image-watermark-overlay"></div>
+    <div id="demo-watermark">
+        <span style="font-size: 14px; margin-bottom: 5px; font-weight: 900;">OFFICIAL DEMO</span>
+        <div class="inner-text">DO NOT USE</div>
+        <span style="font-size: 14px; font-weight: 700; margin-top: 8px;">SECURITY VERIFIED</span>
+    </div>
+
+    <div class="logo-box">
+        <img src="up.png" alt="Logo" class="logo-img">
+    </div>
+
+    <div class="status-success">Transaction Successful</div>
+    <div class="divider"></div>
+    <div class="receipt-header">Transaction Receipt</div>
+
+    <div class="data-content">
+        <div class="data-row orange-txt" style="margin-bottom: 12px;">
+            <div class="label">Transaction ID:</div>
+            <div class="value" id="d-tid">358073206889</div>
+        </div>
+        <div class="data-row" style="margin-bottom: 12px;">
+            <div class="label">Date:</div>
+            <div class="value" id="d-date">30/01/2026 08:33</div>
+        </div>
+        <div class="data-row">
+            <div class="label">Transaction Type:</div>
+            <div class="value">UPaisa Account</div>
+        </div>
+        <div class="data-row">
+            <div class="label">Receiver Name:</div>
+            <div class="value uppercase" id="d-name">MUHAMMAD ASLAM</div>
+        </div>
+        <div class="data-row">
+            <div class="label">Receiver A/C No:</div>
+            <div class="value" id="d-num">03004733766</div>
+        </div>
+        <div class="data-row">
+            <div class="label">Amount:</div>
+            <div class="value">Rs. <span id="d-amt">1</span></div>
+        </div>
+        <div class="data-row">
+            <div class="label">Fee:</div>
+            <div class="value">Rs. 0</div>
+        </div>
+    </div>
+
+    <div class="bottom-line"></div>
+    <div class="total-section">
+        <div>Total Amount:</div>
+        <div>Rs. <span id="d-total">1</span></div>
+    </div>
+</div>
+
+<div id="expiry-modal">
+    <div class="modal-card">
+        <div style="font-size: 45px; margin-bottom: 10px;">🚫</div>
+        <h2>Key Expired!</h2>
+        <p>Premium access khatam ho chuka hai. Nayi key ke liye admin se rabta karein.</p>
+        <button class="modal-btn" onclick="window.location.href='index.html'">Get New Key</button>
+    </div>
+</div>
+
+<script>
+    const SECRET_SALT = "EP_SECURE_2026_V4"; 
+
+    function renderUPaisaReceipt() {
+        const data = {
+            name: sessionStorage.getItem('recName') || "MUHAMMAD ASLAM",
+            num: sessionStorage.getItem('recNum') || "03004733766",
+            amt: parseFloat(sessionStorage.getItem('amount') || 1).toFixed(2),
+            key: sessionStorage.getItem('key') || "",
+            currentDevice: sessionStorage.getItem('currentDeviceID')
+        };
+
+        document.getElementById('d-name').innerText = data.name;
+        document.getElementById('d-num').innerText = data.num;
+        document.getElementById('d-amt').innerText = data.amt;
+        document.getElementById('d-total').innerText = data.amt;
+
+        if (data.key.startsWith("ADS-PRO-")) {
+            let parts = data.key.split("-");
+            if (parts.length === 5) {
+                let devID = parts[2], expiryTime = parseInt(parts[3]), userSignature = parts[4];
+                let magicNumber = (expiryTime * 3).toString();
+                let rawDataForSig = magicNumber + devID + SECRET_SALT + expiryTime;
+                let expectedSignature = btoa(rawDataForSig).split('').reverse().join('').substring(4, 14).toUpperCase();
+
+                if (userSignature === expectedSignature && devID === data.currentDevice) {
+                    if (Math.floor(Date.now() / 1000) < expiryTime) {
+                        document.getElementById('demo-watermark').style.display = "none";
+                        document.getElementById('text-watermark-layer').style.display = "none";
+                        document.getElementById('image-watermark-layer').style.display = "none";
+                    } else {
+                        document.getElementById('expiry-modal').style.display = 'flex';
+                    }
+                }
+            }
+        }
+        updateUPaisaTime();
+        generateUPaisaTID();
+    }
+
+    function generateUPaisaTID() {
+        const startID = 358073200000; 
+        const refTime = new Date('2026-01-01T00:00:00').getTime();
+        const idsGenerated = Math.floor((Date.now() - refTime) / 1000 * 5);
+        document.getElementById('d-tid').innerText = startID + idsGenerated;
+    }
+
+    function updateUPaisaTime() {
+        const now = new Date();
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Karachi' };
+        const parts = new Intl.DateTimeFormat('en-GB', options).formatToParts(now);
+        const d = parts.find(p => p.type === 'day').value;
+        const m = parts.find(p => p.type === 'month').value;
+        const y = parts.find(p => p.type === 'year').value;
+        const h = parts.find(p => p.type === 'hour').value;
+        const mi = parts.find(p => p.type === 'minute').value;
+        document.getElementById('d-date').innerText = `${d}/${m}/${y} ${h}:${mi}`;
+    }
+
+    function downloadUPaisaImage() {
+        const target = document.querySelector("#capture-area");
+        // Scroll to top to ensure clean capture coordinates
+        window.scrollTo(0,0);
+        html2canvas(target, { 
+            scale: 3, 
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            onclone: (clonedDoc) => {
+                // Reset zoom/transform on clone to fix mobile distortion issues
+                const clonedArea = clonedDoc.getElementById('capture-area');
+                clonedArea.style.zoom = "1";
+                clonedArea.style.transform = "none";
+            }
+        }).then(canvas => {
+            const link = document.createElement('a'); 
+            link.download = 'UPaisa_Receipt.png'; 
+            link.href = canvas.toDataURL("image/png"); 
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>

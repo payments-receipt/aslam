@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite E-Receipt Pro | Official Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Orbitron:wght@700;900&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ep-green: #1ab76a;
+            --jc-red: #d92323;
+            --mz-green: #007a3d;
+            --text-white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #1e3a8a);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; position: relative; z-index: 10; }
+
+        header { text-align: center; padding: 20px 0 10px; }
+        .logo-box {
+            display: inline-block; padding: 10px 25px;
+            background: linear-gradient(135deg, #fbbf24 0%, #d92323 100%);
+            color: white; border-radius: 50px;
+            font-weight: 900; font-size: 22px;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+            margin-bottom: 10px;
+        }
+        header h1 { font-size: 26px; font-weight: 900; background: linear-gradient(to right, #fff, #9ca3af); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 12px 8px; border-radius: 15px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .f-1 { border-bottom: 3px solid #00d2ff; }
+        .f-2 { border-bottom: 3px solid #f5a623; }
+        .f-3 { border-bottom: 3px solid #1ab76a; }
+        .f-4 { border-bottom: 3px solid #e11d48; }
+        .feature-card h3 { font-size: 11px; margin-bottom: 3px; font-weight: 900; text-transform: uppercase; }
+        .feature-card p { font-size: 9px; opacity: 0.8; }
+
+        /* --- UPDATED APP SELECTOR --- */
+        .app-selector { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr 1fr; 
+            gap: 10px; 
+            margin: 30px 0;
+            padding: 0 5px;
+        }
+
+        .app-link {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .rocket-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .rocket-orbit {
+            position: absolute;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.1);
+            animation: rotateGlow 4s linear infinite; 
+        }
+
+        .rocket-orbit::after {
+            content: '🚀';
+            position: absolute;
+            top: -10px; left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            font-size: 14px;
+            filter: drop-shadow(0 0 5px #fff);
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .app-card {
+            width: 82%; height: 82%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .app-logo { 
+            width: 100%; height: 100%; 
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .app-title {
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .app-link:hover .rocket-container { transform: scale(1.05); }
+
+        /* --- PRICING --- */
+        .pricing-box {
+            background: linear-gradient(145deg, #1e293b, #000);
+            border-radius: 25px; padding: 25px 15px;
+            text-align: center; border: 2px solid #fbbf24;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .pricing-box::before {
+            content: 'PREMIUM ACCESS';
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: #fbbf24; color: #000; padding: 3px 15px;
+            border-radius: 50px; font-weight: 900; font-size: 10px;
+        }
+
+        .price { font-size: 45px; font-weight: 900; color: #fff; margin: 5px 0; }
+        .price span { font-size: 18px; color: #fbbf24; }
+
+        .btn-wa {
+            background: #25D366; color: white; text-decoration: none;
+            padding: 14px; border-radius: 12px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; margin-top: 15px; font-size: 15px;
+        }
+
+        .btn-tg {
+            background: #0088cc; color: white; text-decoration: none;
+            padding: 10px; border-radius: 10px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px; margin-top: 10px; font-size: 12px;
+        }
+
+        footer { text-align: center; padding: 10px 0; color: rgba(255,255,255,0.4); font-size: 10px; }
+        
+        .pulse { animation: pulseAnim 2s infinite; }
+        @keyframes pulseAnim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- PROFESSIONAL 3D BANNER CSS --- */
+        .banner-wrapper-3d { width: 100%; padding: 15px 0; perspective: 1200px; }
+        .banner-strip-3d {
+            position: relative; width: 100%; min-height: 70px;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px;
+            display: flex; align-items: center; overflow: hidden;
+            transform: rotateX(10deg); transition: 0.3s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: auto3D 4s infinite ease-in-out;
+        }
+        .banner-strip-3d:hover { transform: rotateX(0deg) scale(1.02); border-color: #ffd700; }
+        .grid-layer-3d {
+            position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255, 215, 0, 0.05) 1.5px, transparent 1.5px);
+            background-size: 15px 15px;
+        }
+        .content-flex-3d { width: 100%; display: flex; align-items: center; padding: 0 15px; z-index: 5; gap: 10px; }
+        .hex-box-3d {
+            width: 32px; height: 32px; background: rgba(255, 215, 0, 0.1);
+            border: 1.5px solid #ffd700; display: flex; align-items: center;
+            justify-content: center; border-radius: 8px; transform: rotate(45deg);
+        }
+        .hex-box-3d span { transform: rotate(-45deg); color: #ffd700; font-weight: 900; font-size: 16px; font-family: 'Orbitron', sans-serif; }
+        .text-part-3d { flex: 1; text-align: left; }
+        .heading-main-3d { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 13px; margin: 0; letter-spacing: 0.5px; line-height: 1.2; }
+        .gold-txt-3d { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .heading-sub-3d { font-family: 'Montserrat', sans-serif; color: #94a3b8; font-size: 10px; margin-top: 2px; font-weight: 500; }
+        .shine-line-3d {
+            position: absolute; top: 0; left: -100%; width: 40%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.15), transparent);
+            transform: skewX(-30deg); animation: fastShine 2s infinite linear;
+        }
+        @keyframes fastShine { 0% { left: -100%; } 100% { left: 150%; } }
+        @keyframes auto3D {
+            0% { transform: rotateX(10deg) rotateY(0deg); }
+            50% { transform: rotateX(5deg) rotateY(2deg) translateY(-2px); }
+            100% { transform: rotateX(10deg) rotateY(0deg); }
+        }
+        @media (max-width: 480px) {
+            .banner-strip-3d { transform: rotateX(5deg); min-height: 85px; animation: auto3DMobile 4s infinite ease-in-out; }
+            .content-flex-3d { flex-direction: column; text-align: center; padding: 10px; }
+            .text-part-3d { text-align: center; }
+            .heading-main-3d { font-size: 12px; }
+            @keyframes auto3DMobile {
+                0% { transform: rotateX(5deg); }
+                50% { transform: rotateX(2deg) translateY(-2px); }
+                100% { transform: rotateX(5deg); }
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-box">ADS PAY ELITE</div>
+            <h1>Premium Portal</h1>
+            <p style="opacity: 0.7; font-size: 12px;">The World's Best Receipt Tools</p>
+
+            <!-- Banner Start -->
+            <div class="banner-wrapper-3d">
+                <div class="banner-strip-3d">
+                    <div class="grid-layer-3d"></div>
+                    <div class="content-flex-3d">
+                        <div class="icon-part-3d">
+                            <div class="hex-box-3d"><span>$</span></div>
+                        </div>
+                        <div class="text-part-3d">
+                            <h1 class="heading-main-3d">PTC ADS WATCH & <span class="gold-txt-3d">INVESTMENT WEBSITES</span></h1>
+                            <p class="heading-sub-3d">Apni Personal Website Hum Se Banwain</p>
+                        </div>
+                    </div>
+                    <div class="shine-line-3d"></div>
+                </div>
+            </div>
+            <!-- Banner End -->
+
+        </header>
+
+        <div class="features-grid">
+            <div class="feature-card f-1">
+                <h3 style="color: #00d2ff;">No Watermark</h3>
+                <p>Clean HD Receipts.</p>
+            </div>
+            <div class="feature-card f-2">
+                <h3 style="color: #f5a623;">Auto TID</h3>
+                <p>Real-time IDs.</p>
+            </div>
+            <div class="feature-card f-3">
+                <h3 style="color: #1ab76a;">100% Real</h3>
+                <p>Accurate Fonts.</p>
+            </div>
+            <div class="feature-card f-4">
+                <h3 style="color: #e11d48;">Stable ID</h3>
+                <p>Secure License.</p>
+            </div>
+        </div>
+
+        <div class="app-selector">
+            
+            <!-- Easypaisa -->
+            <a href="easypaisa/index.html" class="app-link">
+                <div class="rocket-container">
+                    <div class="rocket-orbit"></div>
+                    <div class="app-card">
+                        <img src="ep.png" alt="EP" class="app-logo">
+                    </div>
+                </div>
+                <div class="app-title">Easypaisa</div>
+            </a>
+
+            <!-- JazzCash -->
+            <a href="jazzcash/index.html" class="app-link">
+                <div class="rocket-container">
+                    <div class="rocket-orbit"></div>
+                    <div class="app-card">
+                        <img src="jc.png" alt="JC" class="app-logo">
+                    </div>
+                </div>
+                <div class="app-title">JazzCash</div>
+            </a>
+
+            <!-- Meezan -->
+            <a href="meezan/index.html" class="app-link">
+                <div class="rocket-container">
+                    <div class="rocket-orbit"></div>
+                    <div class="app-card">
+                        <img src="mz.png" alt="MZ" class="app-logo">
+                    </div>
+                </div>
+                <div class="app-title">Meezan</div>
+            </a>
+
+            <!-- UPaisa -->
+            <a href="upaisa/index.html" class="app-link">
+                <div class="rocket-container">
+                    <div class="rocket-orbit"></div>
+                    <div class="app-card">
+                        <img src="upaisa.png" alt="UPAISA" class="app-logo">
+                    </div>
+                </div>
+                <div class="app-title">UPaisa</div>
+            </a>
+
+        </div>
+
+        <div class="pricing-box">
+            <div style="font-weight: 900; color: #fbbf24; letter-spacing: 1px; font-size: 13px;">FULL ACCESS COMBO</div>
+            <div class="price pulse"><span>Rs.</span> 500</div>
+            <p style="opacity: 0.8; font-size: 11px;">All 4 Systems • 30 Days Validity</p>
+            
+            <a href="https://wa.me/923009149660" class="btn-wa">
+                🚀 Buy via WhatsApp
+            </a>
+            <a href="https://t.me/BookScriptsCare" class="btn-tg">
+                Telegram: @adspay09
+            </a>
+            <p style="font-size: 11px; margin-top: 10px; font-weight: 900; color: #fbbf24;">Admin: 0300 9149660</p>
+        </div>
+
+        <footer>
+            <p>© 2026 ADS PAY Official • V4.0 Pro</p>
+        </footer>
+    </div>
+
+</body>
+</html>

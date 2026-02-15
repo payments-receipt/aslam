@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JazzCash Pro - Official Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --jc-red: #d92323;
+            --jc-yellow: #f5a623;
+            --text-dark: #1e293b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(-45deg, #fff5f5, #fffcf0, #fff0f0, #fffde6);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.98);
+            width: 100%;
+            max-width: 420px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+            border: 1px solid rgba(217, 35, 35, 0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--jc-red) 0%, #a31a1a 100%);
+            padding: 20px 15px;
+            text-align: center;
+            color: white;
+        }
+        .card-header h1 { margin: 0; font-size: 22px; font-weight: 900; }
+        .card-header p { margin: 5px 0 0; font-size: 12px; opacity: 0.9; }
+
+        .device-info {
+            background: #fff9f0;
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: #475569;
+            border-bottom: 1px solid #fee2e2;
+        }
+
+        .premium-cta {
+            padding: 20px 20px 5px 20px;
+            text-align: center;
+        }
+        .wa-btn {
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 8px 15px rgba(37, 211, 102, 0.25);
+        }
+
+        .card-body { padding: 20px 25px 30px 25px; }
+
+        .input-box { margin-bottom: 18px; }
+        .input-box label { 
+            display: block; 
+            font-size: 11px; 
+            font-weight: 800; 
+            color: #64748b; 
+            margin-bottom: 6px; 
+            text-transform: uppercase; 
+        }
+        .input-box input { 
+            width: 100%; 
+            padding: 14px 18px; 
+            border: 2px solid #f1f5f9; 
+            border-radius: 15px; 
+            font-size: 15px; 
+            outline: none; 
+        }
+        .input-box input:focus { border-color: var(--jc-red); }
+
+        .key-container {
+            background: #fffdf0;
+            border: 2px dashed var(--jc-yellow);
+            padding: 18px;
+            border-radius: 20px;
+            margin: 10px 0 25px 0;
+            text-align: center;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, var(--jc-red) 0%, #a31a1a 100%);
+            color: white; border: none; width: 100%; padding: 18px; border-radius: 18px;
+            font-size: 18px; font-weight: 800; cursor: pointer;
+            box-shadow: 0 12px 30px rgba(217, 35, 35, 0.25);
+        }
+
+        .version-tag { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 25px; }
+    </style>
+</head>
+<body onload="getDeviceID()">
+
+    <div class="main-card">
+        <div class="card-header">
+            <h1>JazzCash Pro</h1>
+            <p>Official Transaction Receipt Generator</p>
+        </div>
+
+        <div class="device-info">
+            Secure Device ID: <b id="my-device-id" style="color:var(--jc-red);">...</b>
+        </div>
+
+        <div class="premium-cta">
+            <a href="https://wa.me/923009149660" class="wa-btn">WhatsApp Admin</a>
+            <p style="font-size:14px; color:#128C7E; font-weight:800; margin-top:10px;">0300 9149660</p>
+        </div>
+
+        <div class="card-body">
+            <!-- UPDATED PLACEHOLDERS -->
+            <div class="input-box">
+                <label>Receiver Name</label>
+                <input type="text" id="in-name" placeholder="Muhammad Aslam">
+            </div>
+
+            <div class="input-box">
+                <label>Receiver Mobile No.</label>
+                <input type="text" id="in-num" placeholder="0300 9149660">
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 20px 0;">
+
+            <div class="input-box">
+                <label>Sender Full Name</label>
+                <input type="text" id="in-sender" placeholder="MUHAMMAD AKRAM">
+            </div>
+
+            <div class="input-box">
+                <label>Sender Mobile No.</label>
+                <input type="text" id="in-sender-num" placeholder="0300 4733766">
+            </div>
+
+            <div class="input-box">
+                <label>Amount (Rs.)</label>
+                <input type="number" id="in-amt" value="100.00">
+            </div>
+
+            <div class="key-container">
+                <label>Premium Mode (Optional)</label>
+                <input type="text" id="sub-key" placeholder="PASTE LICENSE KEY" style="width:100%; text-align:center; padding:10px; border-radius:10px; border:1px solid #fde68a;">
+            </div>
+
+            <button class="btn-generate" onclick="goToReceipt()">
+                Generate JazzCash Receipt 🚀
+            </button>
+
+            <p class="version-tag">2026 Secured System • Professional V4.0</p>
+        </div>
+    </div>
+
+    <script>
+        function getDeviceID() {
+            let specs = navigator.userAgent + screen.width + screen.height + navigator.language;
+            let hash = 0;
+            for (let i = 0; i < specs.length; i++) {
+                hash = ((hash << 5) - hash) + specs.charCodeAt(i);
+                hash |= 0;
+            }
+            let finalID = Math.abs(hash % 10000);
+            if(finalID < 1000) finalID += 1000;
+            document.getElementById('my-device-id').innerText = finalID;
+        }
+
+        function goToReceipt() {
+            const devID = document.getElementById('my-device-id').innerText;
+            
+            // Collect Values with NEW DEFAULTS
+            const recName = document.getElementById('in-name').value || "Muhammad Aslam";
+            const recNum = document.getElementById('in-num').value || "03009149660";
+            const sendName = document.getElementById('in-sender').value || "MUHAMMAD AKRAM";
+            const sendNum = document.getElementById('in-sender-num').value || "03004733766";
+            const amount = document.getElementById('in-amt').value || "100.00";
+            const key = document.getElementById('sub-key').value || "";
+
+            sessionStorage.setItem('recName', recName);
+            sessionStorage.setItem('recNum', recNum);
+            sessionStorage.setItem('sendName', sendName);
+            sessionStorage.setItem('sendNum', sendNum);
+            sessionStorage.setItem('amount', amount);
+            sessionStorage.setItem('key', key);
+            sessionStorage.setItem('currentDeviceID', devID);
+            
+            window.location.href = "receipt.html";
+        }
+    </script>
+</body>
+</html>

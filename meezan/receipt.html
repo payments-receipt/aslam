@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meezan Bank Transaction Success</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --m-purple: #70218a;
+            --m-green: #2eb65f;
+            --m-text-grey: #757575;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px 0;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* --- BUTTON GROUP STYLING --- */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; z-index: 1000; }
+        .btn-download { background: var(--m-green); color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-back { background: white; color: var(--m-purple); border: 2px solid var(--m-purple); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; text-decoration: none; transition: 0.3s; }
+
+        .app-screen {
+            width: 375px;
+            background-color: white; 
+            border-radius: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 20px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* Mobile Stability Fix */
+        @media (max-width: 400px) {
+            .app-screen {
+                zoom: 0.92;
+            }
+        }
+        @media (max-width: 350px) {
+            .app-screen {
+                zoom: 0.85;
+            }
+        }
+
+        /* --- SECURITY WATERMARK CSS --- */
+        .text-watermark-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 150; opacity: 0.35;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='50%25' y='50%25' fill='%23000' font-family='Arial' font-size='7' font-weight='900' text-anchor='middle' transform='rotate(-35 25 25)'%3EDemo Pro%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+        .image-watermark-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 151; opacity: 0.3;
+            background-image: url("st.png");
+            background-repeat: repeat;
+            background-size: 60px 60px;
+        }
+
+        #demo-watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
+            width: 260px; height: 260px; border: 8px double rgba(220, 38, 38, 0.18);
+            border-radius: 50%; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 200; pointer-events: none;
+            color: rgba(220, 38, 38, 0.2); text-align: center;
+        }
+        #demo-watermark .inner-text {
+            font-size: 34px; font-weight: 900; text-transform: uppercase;
+            border-top: 3px solid rgba(220, 38, 38, 0.15); border-bottom: 3px solid rgba(220, 38, 38, 0.15);
+            padding: 5px 0; letter-spacing: 2px;
+        }
+
+        .top-nav { padding: 20px 25px 45px; display: flex; justify-content: flex-end; gap: 20px; }
+        .top-nav svg { width: 26px; height: 26px; fill: var(--m-purple); }
+
+        .main-card { background: white; margin: 0 15px; border-radius: 18px; position: relative; padding-top: 40px; padding-bottom: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); text-align: center; border: 0.5px solid #eee; }
+        .tick-icon { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); width: 58px; height: 58px; background-color: var(--m-green); border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        .success-text { color: var(--m-green); font-size: 21px; font-weight: 500; margin-bottom: 20px; }
+        .amount-box { background-color: #f1f4f8; border-radius: 10px; margin: 0 15px 22px; padding: 18px 0; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .watermark-container { position: absolute; top: -60px; left: -50%; width: 250%; height: 250px; transform: rotate(-15deg); opacity: 0.16; pointer-events: none; display: flex; flex-wrap: wrap; align-content: flex-start; }
+        .watermark-text { font-size: 8px; color: #000; margin: 3px 6px; white-space: nowrap; }
+        .amount-value { font-size: 25px; font-weight: 500; color: var(--m-green); position: relative; z-index: 5; letter-spacing: 0.5px; }
+        .meta-data { color: var(--m-text-grey); font-size: 13.5px; line-height: 1.6; }
+        .dashed-line { border-top: 1.2px dashed #dcdcdc; margin: 8px 25px 22px; }
+        .info-row { display: flex; align-items: center; text-align: left; margin: 0 25px 35px; }
+        .logo-circle { width: 52px; height: 52px; border-radius: 50%; overflow: hidden; margin-right: 15px; border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0; }
+        .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .info-text label { font-size: 12px; color: var(--m-text-grey); display: block; }
+        .info-text .name { font-size: 15.5px; font-weight: 500; color: #333; }
+        .info-text .acc { font-size: 12.5px; color: var(--m-text-grey); }
+        .actions-group { display: flex; justify-content: space-between; margin: 45px 8px 5px; padding: 0; }
+        .action-item { display: flex; flex-direction: column; align-items: center; font-size: 10.5px; color: #555; flex: 1; text-align: center; }
+        .action-item svg { width: 22px; height: 22px; margin-bottom: 8px; stroke: var(--m-purple); stroke-width: 1.2; fill: none; }
+        .footer-btn { background-color: var(--m-purple); color: white; border: none; width: calc(100% - 30px); margin: 20px 15px 10px; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: 500; }
+
+        /* --- COMPACT CENTERED MODAL CSS --- */
+        #expiry-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 99999; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .modal-card {
+            background: white; padding: 25px; border-radius: 20px; text-align: center;
+            width: 280px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            animation: zoomIn 0.3s ease-out;
+        }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-card h2 { color: #dc2626; font-size: 22px; margin: 0 0 10px 0; font-weight: bold; }
+        .modal-card p { color: #444; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+        .modal-btn {
+            background: linear-gradient(135deg, var(--m-purple) 0%, #4a155a 100%);
+            color: white; border: none; padding: 12px 20px;
+            border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px;
+        }
+    </style>
+</head>
+<body onload="initializeMeezan()">
+
+<div class="btn-group">
+    <a href="index.html" class="btn-back">← Edit Details</a>
+    <button class="btn-download" onclick="downloadImage()">Download HD Receipt</button>
+</div>
+
+<div class="app-screen" id="capture-area">
+    <div id="text-watermark-layer" class="text-watermark-overlay"></div>
+    <div id="image-watermark-layer" class="image-watermark-overlay"></div>
+    <div id="demo-watermark">
+        <span style="font-size: 14px; margin-bottom: 5px; font-weight: 900;">OFFICIAL DEMO</span>
+        <div class="inner-text">DO NOT USE</div>
+        <span style="font-size: 14px; font-weight: 700; margin-top: 8px;">SECURITY VERIFIED</span>
+    </div>
+
+    <div class="top-nav">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> 
+        <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg>
+    </div>
+
+    <div class="main-card">
+        <div class="tick-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        <div class="success-text">Transaction Successful</div>
+        <div class="amount-box">
+            <div class="watermark-container" id="wm-container"></div>
+            <div class="amount-value" id="display-amount">PKR 1,020</div>
+        </div>
+        <div class="meta-data">
+            <span id="live-date">...</span> <br>
+            Reference Number: <span id="ref-id">...</span>
+        </div>
+        <div class="dashed-line"></div>
+        <div class="info-row">
+            <div class="logo-circle"><img src="mz.png" alt="Meezan"></div>
+            <div class="info-text">
+                <label>From Account:</label>
+                <div class="name" id="s-name">MUHAMMAD ASLAM</div>
+                <div class="acc" id="s-acc">2661xxx1407</div>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="logo-circle"><img src="ep.png" alt="Easypaisa"></div>
+            <div class="info-text">
+                <label>To Account:</label>
+                <div class="name" id="r-name">AKHTAR NAVED</div>
+                <div class="acc" id="r-acc">0300xxx3766</div>
+            </div>
+        </div>
+        <div class="actions-group">
+            <div class="action-item"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>Favorite Payee</div>
+            <div class="action-item"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>Share Receipt</div>
+            <div class="action-item"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Save Receipt</div>
+        </div>
+    </div>
+    <button class="footer-btn">Make Another Payment</button>
+</div>
+
+<!-- MODAL HTML -->
+<div id="expiry-modal">
+    <div class="modal-card">
+        <div style="font-size: 40px; margin-bottom: 10px;">🚫</div>
+        <h2>Key Expired!</h2>
+        <p>Premium access khatam ho gaya hai. Nayi key ke liye admin se rabta karein.</p>
+        <button class="modal-btn" onclick="window.location.href='index.html'">Get New Key</button>
+    </div>
+</div>
+
+<script>
+    const SECRET_SALT = "EP_SECURE_2026_V4"; 
+
+    function initializeMeezan() {
+        drawMeezanBG();
+        updateMeezanTime();
+        generateMeezanRef();
+        applyLicenseSystem();
+        loadStoredData();
+    }
+
+    function drawMeezanBG() {
+        const container = document.getElementById('wm-container');
+        for(let i=0; i<100; i++) {
+            let span = document.createElement('span');
+            span.className = 'watermark-text';
+            span.innerText = 'Meezan Bank';
+            container.appendChild(span);
+        }
+    }
+
+    function maskNumber(num) {
+        if (!num) return "...";
+        let cleanNum = num.toString().replace(/\s+/g, '');
+        if (cleanNum.length >= 8) {
+            return cleanNum.slice(0, 4) + "xxx" + cleanNum.slice(-4);
+        }
+        return cleanNum;
+    }
+
+    function generateMeezanRef() {
+        const baseID = 13400; 
+        const referenceDate = new Date('2026-01-08T00:00:00').getTime(); 
+        const now = Date.now();
+        const increment = Math.floor((now - referenceDate) / 1000 * (200 / 86400));
+        document.getElementById('ref-id').innerText = (baseID + increment).toString().padStart(6, '0');
+    }
+
+    function updateMeezanTime() {
+        const now = new Date();
+        const options = { day: '2-digit', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Karachi' };
+        const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
+        const m = parts.find(p => p.type === 'month').value;
+        const d = parts.find(p => p.type === 'day').value;
+        const y = parts.find(p => p.type === 'year').value;
+        const h = parts.find(p => p.type === 'hour').value;
+        const mi = parts.find(p => p.type === 'minute').value;
+        const ap = parts.find(p => p.type === 'dayPeriod').value.toUpperCase();
+        document.getElementById('live-date').innerText = `${m} ${d}, ${y} | ${h}:${mi} ${ap}`;
+    }
+
+    function applyLicenseSystem() {
+        const key = sessionStorage.getItem('key') || "";
+        const currentDevice = sessionStorage.getItem('currentDeviceID');
+
+        if (key.startsWith("ADS-PRO-")) {
+            let parts = key.split("-");
+            if (parts.length === 5) {
+                let devID = parts[2], expiryTime = parseInt(parts[3]), userSignature = parts[4];
+                
+                let magicNumber = (expiryTime * 3).toString();
+                let rawDataForSig = magicNumber + devID + SECRET_SALT + expiryTime;
+                let expectedSignature = btoa(rawDataForSig).split('').reverse().join('').substring(4, 14).toUpperCase();
+
+                if (userSignature === expectedSignature && devID === currentDevice) {
+                    if (Math.floor(Date.now() / 1000) < expiryTime) {
+                        document.getElementById('demo-watermark').style.display = "none";
+                        document.getElementById('text-watermark-layer').style.display = "none";
+                        document.getElementById('image-watermark-layer').style.display = "none";
+                    } else {
+                        document.getElementById('expiry-modal').style.display = 'flex';
+                    }
+                }
+            }
+        }
+    }
+
+    function loadStoredData() {
+        const amt = sessionStorage.getItem('amount') || "0";
+        document.getElementById('display-amount').innerText = "PKR " + parseFloat(amt).toLocaleString('en-US');
+        document.getElementById('r-name').innerText = sessionStorage.getItem('recName') || "AKHTAR NAVED";
+        document.getElementById('r-acc').innerText = maskNumber(sessionStorage.getItem('recNum') || "03004733766");
+        document.getElementById('s-name').innerText = sessionStorage.getItem('sendName') || "MUHAMMAD ASLAM";
+        document.getElementById('s-acc').innerText = maskNumber(sessionStorage.getItem('sendNum') || "26610101407");
+    }
+
+    function downloadImage() {
+        const target = document.getElementById("capture-area");
+        window.scrollTo(0, 0);
+        html2canvas(target, { 
+            scale: 3, 
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            onclone: (clonedDoc) => {
+                const clonedArea = clonedDoc.getElementById('capture-area');
+                clonedArea.style.zoom = "1";
+                clonedArea.style.transform = "none";
+                clonedArea.style.margin = "0";
+            }
+        }).then(canvas => {
+            const link = document.createElement('a'); 
+            link.download = 'Meezan_Receipt.png'; 
+            link.href = canvas.toDataURL("image/png", 1.0); 
+            link.click();
+        });
+    }
+</script>
+
+</body>
+</html>
